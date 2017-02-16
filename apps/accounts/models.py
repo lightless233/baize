@@ -35,13 +35,22 @@ class BzUser(models.Model):
     # 1: not active, 2: normal user, 3: banned user
     status = models.PositiveSmallIntegerField(default=1, blank=False, null=False, db_index=True)
 
+    # user's role
+    # 1: guest: can only view all news.
+    # 2: member: can like or unlike the news.
+    # 3: rss manager: can view admin panel. can add/del/edit rss source or import opml file.
+    # 4-9: Reserved.
+    # 10: master: can do anything.
+    role = models.PositiveSmallIntegerField(default=1, blank=False, null=False)
+
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return "<BzUser {user_id} - {username} - {status}>".format(
-            user_id=self.id, username=self.username, status=self.get_status()
+        return "<BzUser {user_id} - {username} - {status} - {role}>".format(
+            user_id=self.id, username=self.username, status=self.get_status(),
+            role=self.role
         )
 
     def get_status(self):
@@ -115,7 +124,9 @@ class BzActiveCode(models.Model):
             return False
 
     def __str__(self):
-        return "<BzActiveCode {code} - {status}>"
+        return "<BzActiveCode {code} - {status}>".format(
+            code=self.code, status=self.get_status()
+        )
 
     def get_status(self):
         """
