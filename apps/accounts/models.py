@@ -38,7 +38,7 @@ class BzUser(models.Model):
     # user's role
     # 1: guest: can only view all news.
     # 2: member: can like or unlike the news.
-    # 3: rss manager: can view admin panel. can add/del/edit rss source or import opml file.
+    # 3: shows manager: can view admin panel. can add/del/edit shows source or import opml file.
     # 4-9: Reserved.
     # 10: master: can do anything.
     role = models.PositiveSmallIntegerField(default=1, blank=False, null=False)
