@@ -19,6 +19,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.conf import settings
 
 from utils import logger, ValidateParams
 
@@ -37,6 +38,10 @@ class LoginView(View):
         if not va.check():
             return JsonResponse(dict(code=1004, message=va.error_message))
         # todo: finish login part.
+
+
+class RegisterView(View):
+    pass
 
 
 

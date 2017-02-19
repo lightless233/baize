@@ -14,9 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from apps.accounts import accounts_controller
+from apps.accounts import accounts_controller, invite_code_controller
 
 urlpatterns = [
     url(r'^$', accounts_controller.LoginView.as_view(), name="login"),
     url(r'^login$', accounts_controller.LoginView.as_view(), name="login"),
+
+    # Invite code router begin.
+    url(r'^admin/api/make_ic$', invite_code_controller.MakeInviteCodeView.as_view(), name="make_invite_code")
+    # Invite code router end.
 ]
