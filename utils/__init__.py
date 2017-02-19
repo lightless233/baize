@@ -1,11 +1,17 @@
-#!/usr/bin/env python2
-# coding: utf-8
-# Created by PyCharm
-# Project: baize
-# Filename: __init__.py
-# Time: 2017/2/16
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
 
+"""
+    utils
+    ~~~~~
 
-__author__ = 'lightless'
-__email__ = 'root@lightless.me'
+    utils package.
 
+    :author:    lightless <root@lightless.me>
+    :homepage:  https://github.com/LiGhT1EsS/baize
+    :license:   GPL-3.0, see LICENSE for more details.
+    :copyright: Copyright (c) 2017 lightless. All rights reserved
+"""
+
+from utils.log_helper import logger
+from utils.validate_params import ValidateParams

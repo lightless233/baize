@@ -1,4 +1,6 @@
 appdirs==1.4.0
+colorama==0.3.7
+colorlog==2.10.0
 Django==1.10.5
 packaging==16.8
 pyparsing==2.1.10

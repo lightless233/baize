@@ -18,6 +18,9 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
+from django.http import JsonResponse
+
+from utils import logger, ValidateParams
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -28,6 +31,12 @@ class LoginView(View):
         return render(request, "accounts/login.html")
 
     @staticmethod
-    def post():
-        pass
+    def post(request):
+        params = request.POST
+        va = ValidateParams(params, ["email", "password"])
+        if not va.check():
+            return JsonResponse(dict(code=1004, message=va.error_message))
+        # todo: finish login part.
+
+
 
