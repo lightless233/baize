@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>白泽 | 登录</title>
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/AdminLTE.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="/static/js/jquery-2.2.3.min.js"></script>
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+  <div class="login-logo">
+    <a href="/"><b>白泽</b> BaiZe</a>
+  </div>
+  <div class="login-box-body">
+    <p class="login-box-msg">登录到白泽系统</p>
+
+    <form>
+      <div class="form-group has-feedback">
+        <input type="email" class="form-control" placeholder="请输入邮箱" id="email">
+        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="password" class="form-control" placeholder="请输入密码" id="password">
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <button class="btn btn-primary btn-block btn-flat" id="login">登录</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="social-auth-links text-center">
+      <p>- OR -</p>
+    </div>
+
+    <a href="#">忘记密码?</a><br>
+    <a href="#" class="text-center">还没有账号?</a>
+
+  </div>
+</div>
+
+
+<script src="//cdn.bootcss.com/jquery-noty/2.4.0/packaged/jquery.noty.packaged.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/utils.js"></script>
+<script>
+$(document).ready(function () {
+
+    $("#login").on("click", function (event) {
+        event.preventDefault();
+        let email = $("#email").val();
+        let password = $("#password").val();
+
+        if (email == "") {
+            makeNoty("error", "邮箱不能为空", "topRight");
+            return false;
+        }
+        if (password == "") {
+            makeNoty("error", "密码不能为空", "topRight");
+            return false;
+        }
+
+        $.post('{% url 'login' %}', {email:email, password:password}, function (data) {
+            if (data.code == 1001) {
+                makeNoty("success", data.message, "topRight");
+                setTimeout("window.location.href='/show'", 3000);
+            } else {
+                makeNoty("error", data.message, "topRight");
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
