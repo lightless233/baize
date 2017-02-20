@@ -16,6 +16,7 @@
 import datetime
 
 from django.db import models
+from django.contrib.auth.hashers import make_password, check_password
 
 
 class BzUser(models.Model):
@@ -67,6 +68,12 @@ class BzUser(models.Model):
             return status_dict[self.status]
         except KeyError:
             return "未知状态"
+
+    def set_password(self, password):
+        self.password = make_password(password)
+
+    def check_password(self, password):
+        return check_password(password, self.password)
 
 
 class BzUserLoginLog(models.Model):

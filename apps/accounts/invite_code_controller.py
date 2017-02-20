@@ -23,6 +23,9 @@ from utils import make_random_string
 
 
 class MakeInviteCodeView(View):
+    """
+    生成邀请码
+    """
 
     @staticmethod
     def get(request):

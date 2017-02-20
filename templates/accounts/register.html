@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>白泽 | 注册</title>
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/AdminLTE.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="/static/js/jquery-2.2.3.min.js"></script>
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+  <div class="login-logo">
+    <a href="/"><b>白泽</b> BaiZe</a>
+  </div>
+  <div class="login-box-body">
+    <p class="login-box-msg">注册到白泽系统</p>
+    <form>
+      <div class="form-group has-feedback">
+        <input type="email" class="form-control" placeholder="请输入邮箱" id="email">
+        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="text" class="form-control" placeholder="请输入用户名" id="username">
+        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="password" class="form-control" placeholder="请输入密码" id="password">
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="text" class="form-control" placeholder="请输入邀请码" id="ic">
+        <span class="glyphicon glyphicon-console form-control-feedback"></span>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <button class="btn btn-primary btn-block btn-flat" id="register">注册</button>
+        </div>
+      </div>
+    </form>
+    <div class="social-auth-links text-center">
+      <p>- OR -</p>
+    </div>
+    <a href="#" class="js-get-ic">如何获取邀请码?</a><br>
+    <a href="{% url 'login' %}" class="text-center">已经有账号?</a>
+  </div>
+</div>
+<script src="//cdn.bootcss.com/jquery-noty/2.4.0/packaged/jquery.noty.packaged.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/utils.js"></script>
+<script>
+$(document).ready(function () {
+
+    $(".js-get-ic").on("click", function () {
+        makeNoty("information", "暂时无法通过其他途径获取，请留意官方新闻.", "topCenter");
+    });
+
+    $("#register").on("click", function (event) {
+        event.preventDefault();
+
+        let email = $("#email").val();
+        if (email == "") {
+            makeNoty("error", "email不能为空", "topRight");
+            return false;
+        }
+        let username = $("#username").val();
+        if (username == "") {
+            makeNoty("error", "username不能为空", "topRight");
+            return false;
+        }
+        let password = $("#password").val();
+        if (password == "") {
+            makeNoty("error", "password不能为空", "topRight");
+            return false;
+        }
+        let ic = $("#ic").val();
+        if (ic == "") {
+            makeNoty("error", "invite code不能为空", "topRight");
+            return false;
+        }
+        let payload = {
+            email: email,
+            password: password,
+            username: username,
+            ic: ic,
+        };
+        $.post("{% url 'register' %}", payload, function (data) {
+            if (data.code == 1001) {
+                makeNoty("success", data.message);
+            } else {
+                makeNoty("error", data.message);
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
