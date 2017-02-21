@@ -14,9 +14,11 @@
     :copyright: Copyright (c) 2017 lightless. All rights reserved
 """
 
+import binascii
 import datetime
 import base64
 import hashlib
+import traceback
 
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -76,6 +78,10 @@ class RegisterView(View):
         if qs:
             return JsonResponse(dict(code=1004, message="用户名或邮箱已被注册!"))
 
+        # 检查用户名和邮箱是否合法
+        if "|" in vp.args.username or "|" in vp.args.email:
+            return JsonResponse(dict(code=1004, message="用户名或邮箱中含有非法字符"))
+
         # 插入用户数据
         new_user = BzUser()
         new_user.username = vp.args.username
@@ -115,6 +121,41 @@ class ValidateEmailView(View):
 
     @staticmethod
     def get(request):
-        pass
 
+        # 获取并验证参数
+        params = request.GET
+        vp = ValidateParams(params, ["sign", "info"])
+        if not vp.check():
+            return JsonResponse(dict(code=1004, message=vp.error_message))
+
+        # decode info参数
+        try:
+            info = base64.b32decode(vp.args.info).decode("utf-8")
+        except binascii.Error as e:
+            logger.error(e)
+            return JsonResponse(dict(code=1004, message="非法的INFO值"))
+
+        # 解包info参数
+        try:
+            user_id, email = info.split("|")
+        except ValueError as e:
+            logger.error(e)
+            return JsonResponse(dict(code=1004, message="非法的INFO值"))
+
+        # 获取用户信息
+        user_qs = BzUser.objects.filter(id=user_id, email=email).first()
+        if not user_qs:
+            return JsonResponse(dict(code=1004, message="非法的INFO值"))
+        if user_qs.status != 1:
+            return JsonResponse(dict(code=1004, message="用户已经激活"))
+
+        # 校验sign参数
+        raw_sign = "".join([user_qs.token, user_qs.username, user_qs.email])
+        if hashlib.md5(raw_sign.encode("ascii")).hexdigest() == vp.args.sign:
+            # 更新用户状态
+            user_qs.status = 2
+            user_qs.save()
+            return JsonResponse(dict(code=1001, message="验证成功，现在将自动转入登录页面"))
+        else:
+            return JsonResponse(dict(code=1004, message="非法的SIGN值"))
 
