@@ -18,20 +18,18 @@ import binascii
 import datetime
 import base64
 import hashlib
-import traceback
 
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.conf import settings
 from django.db.models import Q
 from django.core.urlresolvers import reverse
 
 from utils import logger, ValidateParams, make_random_string
 from utils.send_mail import send_mail
-from apps.accounts.models import BzUser, BzActiveCode
+from apps.accounts.models import BzUser, BzActiveCode, BzUserLoginLog
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -47,7 +45,34 @@ class LoginView(View):
         va = ValidateParams(params, ["email", "password"])
         if not va.check():
             return JsonResponse(dict(code=1004, message=va.error_message))
-        # todo: finish login part.
+
+        # 检查邮箱密码是否正确
+        user_qs = BzUser.objects.filter(email=va.args.email).first()
+        if not user_qs:
+            return JsonResponse(dict(code=1004, message="邮箱或密码错误 - 1"))
+
+        if not user_qs.check_password(va.args.password):
+            return JsonResponse(dict(code=1004, message="邮箱或密码错误 - 2"))
+
+        # 检查用户状态
+        if user_qs.status == 1:
+            return JsonResponse(dict(code=1004, message="用户尚未激活，如果无法激活请联系@LL"))
+        elif user_qs.status == 3:
+            return JsonResponse(dict(code=1004, message="你已被管理员禁止登录，略略略"))
+
+        # 记录用户登录时间和IP
+        login_log = BzUserLoginLog()
+        login_log.user = user_qs
+        login_log.ip = request.META.get("REMOTE_ADDR")
+        login_log.login_time = datetime.datetime.now()
+        login_log.save()
+
+        # 设置session
+        request.session["login"] = True
+        request.session["user_id"] = user_qs.id
+        request.session["username"] = user_qs.username
+
+        return JsonResponse(dict(code=1001, message="登录成功，正在自动跳转..."))
 
 
 @method_decorator(csrf_exempt, name="dispatch")
